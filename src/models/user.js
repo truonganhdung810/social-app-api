@@ -4,14 +4,14 @@ import bcrypt from 'bcryptjs'
 export const UserModel = {
   async findAll() {
     const [rows] = await db.query(
-      'SELECT id, name, email, avatar, cover_photo, role FROM users'
+      'SELECT id, name, email, avatar, cover_photo, ava_offsetX, ava_offsetY, ava_width role FROM users'
     )
     return rows
   },
 
   async findById(id) {
     const [rows] = await db.query(
-      'SELECT id, name, email, avatar, cover_photo, role FROM users WHERE id = ?',
+      'SELECT id, name, email, avatar, cover_photo, role, cover_offsetX, cover_offsetY, ava_offsetX, ava_offsetY, ava_width FROM users WHERE id = ?',
       [id]
     )
     return rows[0]

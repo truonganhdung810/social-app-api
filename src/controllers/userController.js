@@ -25,8 +25,6 @@ export const getUserById = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' })
 
-    console.log('check dieu kien', tokenUserId == paramUserId)
-
     if (tokenUserId == paramUserId) {
       return res.json({
         ...user,

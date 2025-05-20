@@ -29,6 +29,11 @@ export const login = async (req, res) => {
         email: user.email,
         avatar: user.avatar,
         role: user.role,
+        cover_offsetX: user.cover_offsetX,
+        cover_offsetY: user.cover_offsetY,
+        ava_offsetX: user.ava_offsetX,
+        ava_offsetY: user.ava_offsetY,
+        ava_width: user.ava_width,
       },
     })
   } catch (err) {
