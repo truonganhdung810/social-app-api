@@ -45,6 +45,25 @@ export const UserModel = {
     return result.insertId
   },
 
+  async updateCover(cover) {
+    const { id, cover_photo, offsetx, offsety } = cover
+    const query =
+      'UPDATE users SET cover_photo = ?, cover_offsetX = ?, cover_offsetY = ? WHERE id = ?;'
+    const update = await db.query(
+      query,
+      [cover_photo, offsetx, offsety, id],
+      (err, result) => {
+        if (err) {
+          console.error('Lỗi khi cập nhật dữ liệu:', err)
+          return res.status(500).json({ message: 'Lỗi khi cập nhật dữ liệu!' })
+        }
+
+        return res.status(200).json({ message: 'Cập nhật thành công!' })
+      }
+    )
+    return update
+  },
+
   async delete(id) {
     const [result] = await db.query('DELETE FROM users WHERE id = ?', [id])
     return result.affectedRows

@@ -14,11 +14,9 @@ export const getUserById = async (req, res) => {
   try {
     // Lấy ID từ token (được middleware authenticateToken gán vào req.user)
     const tokenUserId = req.user.id
-    console.log('Token id', tokenUserId)
 
     // Lấy ID từ URL
     const paramUserId = req.params.id
-    console.log('Param ID', paramUserId)
 
     // Tìm user trong database
     const user = await UserModel.findById(paramUserId)
