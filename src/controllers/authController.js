@@ -28,6 +28,7 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         avatar: user.avatar,
+        cover_photo: user.cover_photo,
         role: user.role,
         cover_offsetX: user.cover_offsetX,
         cover_offsetY: user.cover_offsetY,

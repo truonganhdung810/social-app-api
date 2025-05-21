@@ -20,7 +20,7 @@ export const uploadCover = async (req, res) => {
 
     // Trả về thông tin file đã upload
     return res.json({
-      message: 'File uploaded successfully!',
+      message: 'OK',
       id: userId,
       file: req.file,
     })

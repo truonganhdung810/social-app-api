@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     console.log('Cấu hình storage', file)
     // Chỉ định thư mục lưu trữ file
-    cb(null, './src/uploads/images')
+    cb(null, './uploads/images')
   },
   filename: (req, file, cb) => {
     // Đặt tên file với timestamp + phần mở rộng
