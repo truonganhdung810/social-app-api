@@ -1,71 +1,71 @@
-import { db } from '../config/db.js'
-import bcrypt from 'bcryptjs'
+import { db } from "../config/db.js";
+import bcrypt from "bcryptjs";
 
 export const UserModel = {
   async findAll() {
     const [rows] = await db.query(
-      'SELECT id, name, email, avatar, cover_photo, ava_offsetX, ava_offsetY, ava_width role FROM users'
-    )
-    return rows
+      "SELECT id, name, email, avatar, cover_photo, ava_offsetX, ava_offsetY, ava_width role FROM users"
+    );
+    return rows;
   },
 
   async findById(id) {
     const [rows] = await db.query(
-      'SELECT id, name, email, avatar, cover_photo, role, cover_offsetX, cover_offsetY, ava_offsetX, ava_offsetY, ava_width FROM users WHERE id = ?',
+      "SELECT id, name, email, avatar, cover_photo, role, cover_offsetX, cover_offsetY, ava_offsetX, ava_offsetY, ava_width FROM users WHERE id = ?",
       [id]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async findByEmail(email) {
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
       email,
-    ])
-    return rows[0]
+    ]);
+    return rows[0];
   },
 
   async create(user) {
-    const { name, email, password, avatar, cover_photo, role } = user
-    const existingUser = await this.findByEmail(email)
+    const { name, email, password, avatar, cover_photo, role } = user;
+    const existingUser = await this.findByEmail(email);
     if (existingUser) {
-      throw new Error('Email already in use')
+      throw new Error("Email already in use");
     }
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await db.query(
-      'INSERT INTO users (name, email, password, avatar, cover_photo, role) VALUES (?, ?, ?, ?, ?, ?)',
+      "INSERT INTO users (name, email, password, avatar, cover_photo, role) VALUES (?, ?, ?, ?, ?, ?)",
       [
         name,
         email,
         hashedPassword,
         avatar || null,
         cover_photo || null,
-        role || 'user',
+        role || "user",
       ]
-    )
-    return result.insertId
+    );
+    return result.insertId;
   },
 
   async updateCover(cover) {
-    const { id, cover_photo, offsetx, offsety } = cover
+    const { id, cover_photo, offsetx, offsety } = cover;
     const query =
-      'UPDATE users SET cover_photo = ?, cover_offsetX = ?, cover_offsetY = ? WHERE id = ?;'
+      "UPDATE users SET cover_photo = ?, cover_offsetX = ?, cover_offsetY = ? WHERE id = ?;";
     const update = await db.query(
       query,
       [cover_photo, offsetx, offsety, id],
       (err, result) => {
         if (err) {
-          console.error('Lỗi khi cập nhật dữ liệu:', err)
-          return res.status(500).json({ message: 'Lỗi khi cập nhật dữ liệu!' })
+          console.error("Lỗi khi cập nhật dữ liệu:", err);
+          return res.status(500).json({ message: "Lỗi khi cập nhật dữ liệu!" });
         }
 
-        return res.status(200).json({ message: 'Cập nhật thành công!' })
+        return res.status(200).json({ message: "Cập nhật thành công!" });
       }
-    )
-    return update
+    );
+    return update;
   },
 
   async delete(id) {
-    const [result] = await db.query('DELETE FROM users WHERE id = ?', [id])
-    return result.affectedRows
+    const [result] = await db.query("DELETE FROM users WHERE id = ?", [id]);
+    return result.affectedRows;
   },
-}
+};
