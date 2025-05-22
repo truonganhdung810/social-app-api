@@ -9,9 +9,11 @@ export const uploadCover = async (req, res) => {
       return res.status(400).send('No file uploaded.')
     }
     // Lưu file vào database
+    const fileUrl = `http://localhost:4000/uploads/images/${req.file.filename}`
+    console.log('Cover url', fileUrl)
     const cover = {
       id: userId,
-      cover_photo: req.file.path,
+      cover_photo: fileUrl,
       offsetx: req.headers.offsetx,
       offsety: req.headers.offsety,
     }
@@ -22,6 +24,7 @@ export const uploadCover = async (req, res) => {
     return res.json({
       message: 'OK',
       id: userId,
+      fileUrl: fileUrl,
       file: req.file,
     })
   } catch (err) {
