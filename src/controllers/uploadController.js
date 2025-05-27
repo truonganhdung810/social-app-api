@@ -32,3 +32,37 @@ export const uploadCover = async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 }
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    // Lấy ID từ URL
+    const userId = req.headers.id
+    // Nếu đúng user, thực hiện lưu file
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.')
+    }
+    // Lưu file vào database
+    const fileUrl = `http://localhost:4000/uploads/images/${req.file.filename}`
+    console.log('Avatar url', fileUrl)
+    const cover = {
+      id: userId,
+      avatar_src: fileUrl,
+      offsetx: req.headers.offsetx,
+      offsety: req.headers.offsety,
+      ava_width: req.headers.cropWidth,
+    }
+    const message = await UserModel.updateAvatar(cover)
+    console.log('Update Avatar', message)
+
+    // Trả về thông tin file đã upload
+    return res.json({
+      message: 'OK',
+      id: userId,
+      fileUrl: fileUrl,
+      file: req.file,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}

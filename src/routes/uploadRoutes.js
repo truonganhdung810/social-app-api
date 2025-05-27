@@ -1,7 +1,7 @@
 import express from 'express'
 import { authenticateUpload } from '../middleware/authMiddleware.js'
 import upload from '../middleware/uploadMiddleware.js'
-import { uploadCover } from '../controllers/uploadController.js'
+import { uploadAvatar, uploadCover } from '../controllers/uploadController.js'
 
 const router = express.Router()
 
@@ -10,6 +10,13 @@ router.post(
   authenticateUpload,
   upload.single('cover-image'),
   uploadCover
+)
+
+router.post(
+  '/avatar',
+  authenticateUpload,
+  upload.single('avatar-image'),
+  uploadAvatar
 )
 
 export default router

@@ -1,9 +1,9 @@
 // middleware/uploadMiddleware.js
-const multer = require('multer')
-const path = require('path')
+import multer, { diskStorage } from 'multer'
+import path from 'path'
 
 // Cấu hình nơi lưu trữ file upload
-const storage = multer.diskStorage({
+const storage = diskStorage({
   destination: (req, file, cb) => {
     console.log('Cấu hình storage', file)
     // Chỉ định thư mục lưu trữ file
@@ -18,4 +18,4 @@ const storage = multer.diskStorage({
 // Middleware để upload một file duy nhất
 const upload = multer({ storage: storage })
 
-module.exports = upload
+export default upload
