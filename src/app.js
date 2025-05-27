@@ -20,6 +20,9 @@ app.use("/api/posts", postRoutes);
 
 app.use("/api/upload/", uploadRoutes);
 
+// Các Routes của Posts
+app.use("/api/posts/", postRoutes);
+
 // Public folder 'uploads' ở đường dẫn /uploads
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
