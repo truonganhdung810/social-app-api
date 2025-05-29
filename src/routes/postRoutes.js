@@ -1,18 +1,26 @@
-import express from "express";
+import express from 'express'
+import { authenticateIsMe } from '../middleware/authMiddleware.js'
+import upload from '../middleware/uploadMiddleware.js'
 import {
+  getPostsByUserId,
+  createPost,
+  deletePost,
+} from '../controllers/postController.js'
+
+const router = express.Router()
+
+// Route tạo post
+router.post(
+  '/create',
   authenticateIsMe,
-  authenticateToken,
-} from "../middleware/authMiddleware.js";
-import { getPostsByUserId } from "../controllers/postController.js";
+  upload.single('post-image'),
+  createPost
+)
 
-const router = express.Router();
-
-// Route mẫu tạo post (sẽ thêm sau)
-router.post("/", authenticateToken, (req, res) => {
-  res.json({ message: "Post created" });
-});
+// Route xóa post
+router.delete('/:id', authenticateIsMe, deletePost)
 
 // Route lấy các post của user ID
-router.get("/user/:id", authenticateIsMe, getPostsByUserId);
+router.get('/user/:id', authenticateIsMe, getPostsByUserId)
 
-export default router;
+export default router

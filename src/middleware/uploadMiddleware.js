@@ -11,6 +11,7 @@ const storage = diskStorage({
   },
   filename: (req, file, cb) => {
     const filename = Date.now() + file.originalname // Tạo tên file duy nhất
+    console.log('File upload', filename)
     cb(null, filename)
   },
 })
