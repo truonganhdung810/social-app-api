@@ -185,3 +185,23 @@ export const getPostsByUserId = async (req, res) => {
     return res.status(500).json({ message: 'Server error' })
   }
 }
+
+export const getAllPublicPosts = async (req, res) => {
+  try {
+    const posts = await PostModel.getAllPublicPosts()
+    res.json(posts)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
+export const getAllPublicPostsWithUser = async (req, res) => {
+  try {
+    const posts = await PostModel.getAllPublicPostsWithUser()
+    res.json(posts)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}

@@ -72,4 +72,50 @@ export const PostModel = {
       throw error
     }
   },
+
+  // Lấy tất cả post công khai
+  async getAllPublicPosts() {
+    const [posts] = await db.execute(
+      "SELECT id, user_id, content, image, created_at FROM posts WHERE visibility = 'public' ORDER BY created_at DESC"
+    )
+    return posts
+  },
+
+  async getAllPublicPostsWithUser() {
+    const [rows] = await db.execute(`
+    SELECT
+      posts.id AS post_id,
+      posts.content,
+      posts.image,
+      posts.visibility,
+      posts.created_at,
+
+      users.id AS user_id,
+      users.name AS user_name,
+      users.avatar AS user_avatar,
+      users.ava_width,
+      users.ava_offsetX,
+      users.ava_offsetY
+
+     FROM posts
+     JOIN users ON posts.user_id = users.id
+     ORDER BY posts.created_at DESC
+    `)
+
+    return rows.map((row) => ({
+      id: row.post_id,
+      content: row.content,
+      image: row.image,
+      visibility: row.visibility,
+      created_at: row.created_at,
+      user: {
+        id: row.user_id,
+        name: row.user_name,
+        avatar: row.user_avatar,
+        ava_width: row.ava_width,
+        ava_offsetX: row.ava_offsetX,
+        ava_offsetY: row.ava_offsetY,
+      },
+    }))
+  },
 }

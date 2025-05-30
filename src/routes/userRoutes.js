@@ -4,6 +4,8 @@ import {
   getUserById,
   createUser,
   deleteUser,
+  getAllUsers,
+  getPublicUserProfile,
 } from '../controllers/userController.js'
 import {
   authenticateToken,
@@ -12,6 +14,8 @@ import {
 
 const router = express.Router()
 
+router.get('/public', getAllUsers)
+router.get('/public/:id', getPublicUserProfile)
 router.get('/', authenticateToken, getUsers)
 router.get('/:id', authenticateToken, getUserById)
 router.post('/', createUser)

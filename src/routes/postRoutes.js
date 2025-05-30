@@ -5,9 +5,14 @@ import {
   getPostsByUserId,
   createPost,
   deletePost,
+  getAllPublicPosts,
+  getAllPublicPostsWithUser,
 } from '../controllers/postController.js'
 
 const router = express.Router()
+
+// Route lấy danh sách post
+router.get('/public', getAllPublicPostsWithUser)
 
 // Route tạo post
 router.post(
