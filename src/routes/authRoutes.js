@@ -1,8 +1,12 @@
-import express from 'express'
-import { login } from '../controllers/authController.js'
+import express from "express";
+import { login } from "../controllers/authController.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/login', login)
+router.get("/me", authenticateToken, (req, res) => {
+  res.json({ id: req.user.id, name: req.user.name }); // hoặc thông tin cần thiết
+});
 
-export default router
+router.post("/login", login);
+
+export default router;
