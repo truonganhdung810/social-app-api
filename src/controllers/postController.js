@@ -1,104 +1,104 @@
-import { PostModel } from '../models/post.js'
-import { UserModel } from '../models/user.js'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { PostModel } from "../models/post.js";
+import { UserModel } from "../models/user.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createPost = async (req, res) => {
   try {
-    const userId = req.user.id
-    const { content, visibility = 'public' } = req.body
+    const userId = req.user.id;
+    const { content, visibility = "public" } = req.body;
 
-    const allowedVisibilities = ['public', 'friends', 'private']
+    const allowedVisibilities = ["public", "friends", "private"];
     if (!allowedVisibilities.includes(visibility)) {
-      return res.status(400).json({ message: 'Invalid visibility option' })
+      return res.status(400).json({ message: "Invalid visibility option" });
     }
 
     // Nếu có ảnh thì multer đã gán req.file
     const imageUrl = req.file
       ? `http://localhost:4000/uploads/images/${req.file.filename}`
-      : null
+      : null;
 
     if (!content && !imageUrl) {
       return res
         .status(400)
-        .json({ message: 'Post must have content or image' })
+        .json({ message: "Post must have content or image" });
     }
     console.log(
-      'du lieu gui sang Model.create',
+      "du lieu gui sang Model.create",
       userId,
       content,
       imageUrl,
       visibility
-    )
+    );
     const newPost = await PostModel.create({
       userId,
       content,
       imageUrl,
       visibility,
-    })
-    return res.status(201).json(newPost)
+    });
+    return res.status(201).json(newPost);
   } catch (err) {
-    console.error('Error creating post:', err)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error("Error creating post:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 export const updatePost = async (req, res) => {
   try {
-    const userId = req.user.id
-    const postId = req.params.id
-    const { content, visibility = 'public' } = req.body
+    const userId = req.user.id;
+    const postId = req.params.id;
+    const { content, visibility = "public" } = req.body;
 
-    const allowedVisibilities = ['public', 'friends', 'private']
+    const allowedVisibilities = ["public", "friends", "private"];
     if (!allowedVisibilities.includes(visibility)) {
-      return res.status(400).json({ message: 'Invalid visibility option' })
+      return res.status(400).json({ message: "Invalid visibility option" });
     }
 
     if (!content) {
-      return res.status(400).json({ message: 'Content is required to update' })
+      return res.status(400).json({ message: "Content is required to update" });
     }
 
-    const updated = await PostModel.update(postId, userId, content, visibility)
+    const updated = await PostModel.update(postId, userId, content, visibility);
     if (!updated) {
       return res
         .status(404)
-        .json({ message: 'Post not found or not owned by user' })
+        .json({ message: "Post not found or not owned by user" });
     }
 
-    res.json({ message: 'Post updated successfully' })
+    res.json({ message: "Post updated successfully" });
   } catch (err) {
-    console.error('Error updating post:', err)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error("Error updating post:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 export const deletePost = async (req, res) => {
   try {
-    const postId = req.params.id
-    const userId = req.user.id
-    const isAdmin = req.user.role === 'admin'
-    console.log('delete function', postId, userId, isAdmin)
+    const postId = req.params.id;
+    const userId = req.user.id;
+    const isAdmin = req.user.role === "admin";
+    console.log("delete function", postId, userId, isAdmin);
 
-    const post = await PostModel.getById(postId)
-    if (!post) return res.status(404).json({ message: 'Post not found' })
+    const post = await PostModel.getById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (post.user_id !== userId && !isAdmin) {
-      return res.status(403).json({ message: 'You cannot delete this post' })
+      return res.status(403).json({ message: "You cannot delete this post" });
     }
 
     // Kiểm tra nếu ảnh đang là avatar hoặc cover_photo hiện tại
     if (post.image) {
-      const user = await UserModel.findById(post.user_id)
+      const user = await UserModel.findById(post.user_id);
 
       if (user.avatar === post.image) {
         if (!isAdmin) {
           return res.status(400).json({
             message:
-              'Cannot delete image because it is currently used as avatar',
-          })
+              "Cannot delete image because it is currently used as avatar",
+          });
         } else {
           await UserModel.updateAvatar({
             id: user.id,
@@ -106,7 +106,7 @@ export const deletePost = async (req, res) => {
             offsetx: 0,
             offsety: 0,
             ava_width: 0,
-          })
+          });
         }
       }
 
@@ -114,103 +114,117 @@ export const deletePost = async (req, res) => {
         if (!isAdmin) {
           return res.status(400).json({
             message:
-              'Cannot delete image because it is currently used as cover photo',
-          })
+              "Cannot delete image because it is currently used as cover photo",
+          });
         } else {
           await UserModel.updateCover({
             id: user.id,
             cover_photo: null,
             offsetx: 0,
             offsety: 0,
-          })
+          });
         }
       }
 
       // Luôn xóa ảnh vật lý sau khi xử lý avatar/cover
-      const fileName = path.basename(post.image)
-      const imagePath = path.join(__dirname, '../uploads/images', fileName)
+      const fileName = path.basename(post.image);
+      const imagePath = path.join(__dirname, "../uploads/images", fileName);
 
       fs.access(imagePath, fs.constants.F_OK, (accessErr) => {
         if (accessErr) {
-          console.warn('Ảnh không tồn tại:', imagePath)
+          console.warn("Ảnh không tồn tại:", imagePath);
         } else {
           fs.unlink(imagePath, (err) => {
-            if (err) console.warn('Lỗi khi xóa ảnh:', err.message)
-            else console.log('Đã xóa ảnh:', fileName)
-          })
+            if (err) console.warn("Lỗi khi xóa ảnh:", err.message);
+            else console.log("Đã xóa ảnh:", fileName);
+          });
         }
-      })
+      });
     }
 
     // Gọi đúng hàm theo quyền
     const deleted = isAdmin
       ? await PostModel.deleteAsAdmin(postId)
-      : await PostModel.delete(postId, userId)
+      : await PostModel.delete(postId, userId);
 
     if (!deleted) {
-      return res.status(500).json({ message: 'Failed to delete post' })
+      return res.status(500).json({ message: "Failed to delete post" });
     }
-    res.status(200).json({ message: 'Post deleted successfully' })
+    res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
-    console.error('Error deleting post:', err)
-    res.status(500).json({ message: 'Server error' })
+    console.error("Error deleting post:", err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 export const getPostsByUserId = async (req, res) => {
   try {
-    const userId = req.params.id
+    const userId = req.params.id;
 
-    const posts = await PostModel.getPostsByUserId(userId)
+    const posts = await PostModel.getPostsByUserId(userId);
 
     return res.status(200).json({
-      message: 'Fetched user posts successfully',
+      message: "Fetched user posts successfully",
       posts,
-    })
+    });
   } catch (err) {
-    console.error('Error fetching posts by user:', err)
-    return res.status(500).json({ message: 'Server error' })
+    console.error("Error fetching posts by user:", err);
+    return res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-export const getPublicPostsByUserId = async (req, res) => {
-  const userId = req.params.id
+export const getPublicFriendPostsByUserId = async (req, res) => {
+  const userId = req.params.id;
   try {
-    const posts = await PostModel.getPublicByUserId(userId)
-    res.json(posts)
+    const posts = await PostModel.getPublicFriendPostByUserId(userId);
+    res.json(posts);
   } catch (err) {
-    console.error('Error getting public posts by user:', err)
-    res.status(500).json({ message: 'Server error' })
+    console.error("Error getting public posts by user:", err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 export const getAllPublicPosts = async (req, res) => {
   try {
-    const posts = await PostModel.getAllPublicPosts()
-    res.json(posts)
+    const posts = await PostModel.getAllPublicPosts();
+    res.json(posts);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server error' })
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 export const getAllPublicPostsWithUser = async (req, res) => {
   try {
-    const posts = await PostModel.getAllPublicPostsWithUser()
-    res.json(posts)
+    const posts = await PostModel.getAllPublicPostsWithUser();
+    res.json(posts);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server error' })
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-export const getPublicAndFriendPosts = async (req, res) => {
-  const { id } = req.params
+export const getAllPublicFriendPosts = async (req, res) => {
+  const { id } = req.params;
   try {
-    const posts = await PostModel.getPublicAndFriendPostsByUserId(id)
-    res.status(200).json(posts)
+    const posts = await PostModel.getAllPublicFriendPosts(id);
+    res.status(200).json(posts);
   } catch (err) {
-    console.error('Error fetching posts:', err)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
+export const getPublicFriendPostByUserId = async (req, res) => {
+  const { id } = req.params;
+  const viewerId = req.user.id;
+  if (id != viewerId) {
+    try {
+      const posts = await PostModel.getPublicFriendPostByUserId(id);
+      res.status(200).json(posts);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+};

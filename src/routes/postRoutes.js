@@ -1,44 +1,45 @@
-import express from 'express'
+import express from "express";
 import {
   authenticateIsMe,
   authenticateToken,
-} from '../middleware/authMiddleware.js'
-import upload from '../middleware/uploadMiddleware.js'
+} from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 import {
   getPostsByUserId,
   createPost,
   deletePost,
-  getPublicPostsByUserId,
+  getPublicFriendPostByUserId,
   getAllPublicPostsWithUser,
-  getPublicAndFriendPosts,
-} from '../controllers/postController.js'
+  getAllPublicFriendPosts,
+} from "../controllers/postController.js";
 
-const router = express.Router()
+const router = express.Router();
 
 // Route lấy danh sách post public của tất cả user
-router.get('/public', getAllPublicPostsWithUser)
+router.get("/public", getAllPublicPostsWithUser);
 
-// Route lấy danh sách post public của user có id
-router.get('/public/user/:id', getPublicPostsByUserId)
+// Route lấy danh sách post public và friend của toàn bộ user
+router.get("/public-friend/", authenticateToken, getAllPublicFriendPosts);
 
+// Route lấy danh sách post public và friend của user có id
 router.get(
-  '/public-friend/user/:id/',
+  "/public-friend/user/:id",
   authenticateToken,
-  getPublicAndFriendPosts
-)
+  getPublicFriendPostByUserId
+);
 
 // Route tạo post
 router.post(
-  '/create',
+  "/create",
   authenticateIsMe,
-  upload.single('post-image'),
+  upload.single("post-image"),
   createPost
-)
+);
 
 // Route xóa post
-router.delete('/:id', authenticateIsMe, deletePost)
+router.delete("/:id", authenticateIsMe, deletePost);
 
 // Route lấy các post của user ID
-router.get('/user/:id', authenticateIsMe, getPostsByUserId)
+router.get("/user/:id", authenticateIsMe, getPostsByUserId);
 
-export default router
+export default router;
