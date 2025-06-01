@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import postRoutes from './routes/postRoutes.js'
@@ -17,6 +18,8 @@ app.use(
     credentials: true, // Cho phép gửi + nhận cookie
   })
 )
+
+app.use(cookieParser())
 app.use(express.json())
 
 app.use('/api/users', userRoutes)

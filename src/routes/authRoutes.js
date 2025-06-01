@@ -1,12 +1,13 @@
-import express from "express";
-import { login } from "../controllers/authController.js";
+import express from 'express'
+import { login } from '../controllers/authController.js'
+import { authenticateToken } from '../middleware/authMiddleware.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/me", authenticateToken, (req, res) => {
-  res.json({ id: req.user.id, name: req.user.name }); // hoặc thông tin cần thiết
-});
+router.get('/me', authenticateToken, (req, res) => {
+  res.json({ id: req.user.id, name: req.user.name }) // hoặc thông tin cần thiết
+})
 
-router.post("/login", login);
+router.post('/login', login)
 
-export default router;
+export default router
