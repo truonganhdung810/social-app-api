@@ -1,5 +1,6 @@
 import { db } from '../config/db.js'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 export const UserModel = {
   // Lấy danh sách user thường

@@ -74,11 +74,13 @@ export const PostModel = {
     }
   },
 
-  async getPublicByUserId(userId) {
+  async getPublicPostsByUserId(userId) {
     const [rows] = await db.execute(
       'SELECT * FROM posts WHERE user_id = ? AND visibility = "public" ORDER BY created_at DESC',
       [userId]
     );
+    console.log("User Id", userId)
+    console.log("Danh sach post public", rows)
     return rows;
   },
 

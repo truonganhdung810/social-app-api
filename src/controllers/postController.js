@@ -228,3 +228,17 @@ export const getPublicFriendPostByUserId = async (req, res) => {
     }
   }
 };
+
+export const getPublicPostsByUserId = async (req, res) => {
+  const { id } = req.params;
+ 
+    try {
+      const posts = await PostModel.getPublicPostsByUserId(id);
+      
+      res.status(200).json(posts);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  
+};

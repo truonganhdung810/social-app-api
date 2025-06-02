@@ -11,12 +11,15 @@ import {
   getPublicFriendPostByUserId,
   getAllPublicPostsWithUser,
   getAllPublicFriendPosts,
+  getPublicPostsByUserId
 } from "../controllers/postController.js";
 
 const router = express.Router();
 
 // Route lấy danh sách post public của tất cả user
 router.get("/public", getAllPublicPostsWithUser);
+router.get("/public/user/:id",getPublicPostsByUserId)
+
 
 // Route lấy danh sách post public và friend của toàn bộ user
 router.get("/public-friend/", authenticateToken, getAllPublicFriendPosts);
@@ -27,6 +30,8 @@ router.get(
   authenticateToken,
   getPublicFriendPostByUserId
 );
+
+
 
 // Route tạo post
 router.post(

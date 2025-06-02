@@ -1,5 +1,6 @@
 import { PostModel } from '../models/post.js'
 import { UserModel } from '../models/user.js'
+import jwt from 'jsonwebtoken'
 
 export const getUsers = async (req, res) => {
   try {
